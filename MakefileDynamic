@@ -1,0 +1,35 @@
+LIB_PATH=bin/vecteur.so
+CFLAGS+= -Wall -g -std=c99 -fPIC
+
+all: mkbin mklib mkobj $(LIB_PATH)
+	gcc src/main.c -o bin/vecteur \
+-lvecteur -Llib -Iinclude $(CFLAGS)
+
+mkbin:
+	-@mkdir bin
+
+mklib:
+	-@mkdir lib
+
+mkobj:
+	-@mkdir obj
+
+$(LIB_PATH): norme.o produit.o
+	gcc -o $(LIB_PATH) obj/norme.o obj/produit.o -shared $(CFLAGS)
+
+norme.o: src/norme.c include/norme.h include/type.h
+	gcc -c src/norme.c -o obj/norme.o \
+-Iinclude $(CFLAGS)
+
+produit.o: src/produit.c include/produit.h
+	gcc -c src/produit.c -o obj/produit.o \
+-Iinclude $(CFLAGS)
+
+clean:
+	-rm -rf bin
+	-rm -rf lib
+	-rm -rf obj
+	-rm -f vecteur.tar.gz
+
+archive:
+	tar -czvf vecteur.tar.gz ./*  --exclude=*.vcxproj*
